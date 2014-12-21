@@ -12,6 +12,15 @@ uname = raw_input("Github username[jamiis]:") or "jamiis"
 pwd = getpass()
 gh = github3.login(uname, pwd)
 
+def sleep_on_rate_limit(err):
+    '''sleep until github api requests reset'''
+    if err.message == "API rate limit exceeded for %s." % uname:
+        reset = dt.fromtimestamp(gh.rate_limit()['rate']['reset'])
+        wait = (reset - dt.now()).total_seconds()
+        if wait > 0:
+            print 'waiting', wait/60.0, 'minutes'
+            sleep(wait)
+
 def prevail(gen):
     '''
     forces generator to continue even on error. very naive! don't use 
@@ -22,18 +31,10 @@ def prevail(gen):
           yield next(gen)
         except StopIteration:
           raise
-        except (ForbiddenError) as e:
-            print e.__class__.__name__, e
-            # if rate-limiting error
-            if e.message == "API rate limit exceeded for %s." % uname:
-                reset = dt.fromtimestamp(gh.rate_limit()['rate']['reset'])
-                wait = (reset - dt.now()).total_seconds()
-                if wait > 0:
-                    sleep(wait)
-            pass
         # catches all github3.exceptions
         except (GitHubError) as e:
             print e.__class__.__name__, e
+            sleep_on_rate_limit(e)
             pass
 
 # memoize star count. 
@@ -56,6 +57,7 @@ with open('data/stargazers', 'a') as f:
                     stargazers[repo.full_name] = repo.stargazers_count
                 except (ForbiddenError, GitHubError, ServerError) as e:
                     print 'rep.refresh', e.__class__.__name__, e
+                    sleep_on_rate_limit(e)
                     continue
 
             f.write("%s::%s::%s::%s::%s\n" % (
