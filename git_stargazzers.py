@@ -37,10 +37,6 @@ def prevail(gen):
             sleep_on_rate_limit(e)
             pass
 
-# memoize star count. 
-# format: { 'user/repo': star_count }
-stargazers = {}
-
 with open('data/stargazers', 'a') as f:
 
     since = raw_input("Continue from repo ID[None]:") or None
@@ -50,19 +46,8 @@ with open('data/stargazers', 'a') as f:
 
         for repo in prevail(user.starred_repositories()):
 
-            # make another api call if stargazers count unknown
-            if repo.full_name not in stargazers:
-                try:
-                    repo.refresh()
-                    stargazers[repo.full_name] = repo.stargazers_count
-                except (ForbiddenError, GitHubError, ServerError) as e:
-                    print 'rep.refresh', e.__class__.__name__, e
-                    sleep_on_rate_limit(e)
-                    continue
-
-            f.write("%s::%s::%s::%s::%s\n" % (
+            f.write("%s::%s::%s::%s\n" % (
                 user.login,
                 user.id,
                 repo.full_name,
-                repo.id,
-                stargazers[repo.full_name]))
+                repo.id))
