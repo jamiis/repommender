@@ -14,12 +14,15 @@ gh = github3.login(uname, pwd)
 
 def sleep_on_rate_limit(err):
     '''sleep until github api requests reset'''
+    # note: dumb way to check error type but there is no rate limit specific err
     if err.message == "API rate limit exceeded for %s." % uname:
-        reset = dt.fromtimestamp(gh.rate_limit()['rate']['reset'])
-        wait = (reset - dt.now()).total_seconds()
-        if wait > 0:
-            print 'waiting', wait/60.0, 'minutes'
-            sleep(wait)
+        # check rate limit every 5 minute
+        retry_in = 60*5
+        while True:
+            if gh.rate_limit()['rate']['remaining']:
+                return
+            print 'continue in', retry_in/60.0, 'minutes'
+            sleep(retry_in)
 
 def prevail(gen):
     '''
@@ -28,11 +31,11 @@ def prevail(gen):
     '''
     while True:
         try:
-          yield next(gen)
+            yield next(gen)
         except StopIteration:
-          raise
+            raise
         # catches all github3.exceptions
-        except (GitHubError) as e:
+        except GitHubError as e:
             print e.__class__.__name__, e
             sleep_on_rate_limit(e)
             pass
