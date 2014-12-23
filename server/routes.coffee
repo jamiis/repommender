@@ -24,23 +24,11 @@ module.exports = (app) ->
   app.use "/img", express.static(app.get("appPath") + "/app/img/")
 
   # update twitter stream word filter
-  app.route("/filter/:words").post (req, res) ->
-    console.log req.params.words
-
-  ###
-  snsClient = SNSClient { verify: false }, (err, message) ->
-    console.log err if err
-    console.log message unless err
-
-  app.route("/receive").post(
-    # use sns in production dev
-    if config.env isnt "dev" then snsClient
-    else (req, res, next) ->
-      tweet = req.body
-      console.log "emitting ", tweet
-      app.get("io").emit "tweet", tweet
-      res.sendStatus 200)
-  ###
+  app.route("/search/:username").post (req, res) ->
+    username = req.params.username
+    console.log username
+    # TODO return recommendations based on user
+    res.json { uname: username }
 
   # all undefined asset or api routes should return a 404
   app.route("/:url(api|auth|components|app|bower_components|assets)/*").get errors[404]
