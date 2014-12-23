@@ -5,7 +5,8 @@
 from pyspark.mllib.recommendation import ALS
 from numpy import array
 from pyspark import SparkContext
-import os
+from pprint import pprint
+import os, sys
 
 def extract_user_repo(line, fieldtype=float):
     line = line.split('::')
@@ -20,33 +21,59 @@ def extract_user_repo(line, fieldtype=float):
 if __name__ == "__main__":
     sc = SparkContext(appName='TweetSentiment')
 
-    # load and parse the data
-    data = sc.textFile("data/stargazers.mini.sample")
+    env = os.getenv('ENV', 'dev')
+    if  env == 'dev':
+        lines = sys.argv[1] if len(sys.argv) >= 2 else '100'
+        text = 'data/stargazers.%sk' % lines
+    elif env == 'prod':
+        text = 's3n://jamis.bucket/stargazers'
 
-    stars = data.map(extract_user_repo)
-    stars.cache()
+    # load and parse the text file
+    data = sc.textFile(text)
+
+    starpairs = data.map(extract_user_repo)
+    starpairs.cache()
+
+    users = starpairs.map(lambda t: t[0]).distinct()
+
+    # get 5% most popular repos
+    repos = starpairs.map(lambda t: t[1]).distinct()
+    sample = int(0.01 * repos.count())
+    top_repos = starpairs\
+        .groupBy(lambda t: t[1])\
+        .sortBy(lambda t: len(t[1]), False)\
+        .map(lambda t: t[0])\
+        .take(sample)
+    top_repos_rdd = sc.parallelize(top_repos)
+    top_repos_rdd.cache()
+    top_repos_bc = sc.broadcast(top_repos)
+    pprint(top_repos[:5])
+
+    starpairs_filtered = starpairs.filter(lambda t: t[1] in top_repos_bc.value)
+    starpairs_filtered.cache()
 
     # train recommendation model using alternating least squares
-    stars_with_rating = stars.map(lambda t: array([t[0], t[1], 1]))
-    model = ALS.trainImplicit(stars_with_rating, rank=1, iterations=20)
+    stars_with_rating = starpairs_filtered.map(lambda t: array([t[0], t[1], 1]))
+    model = ALS.trainImplicit(stars_with_rating, rank=1)
 
     # get all user->repo pairs without stars
-    users = stars.map(lambda t: t[0]).distinct()
-    repos = stars.map(lambda t: t[1]).distinct()
-    # output format: [ (user, repo) ... ]
-    unstarred = users.cartesian(repos)\
-        .join(stars)\
-        .filter(lambda t: t[1][0] != t[1][1])\
-        .map(lambda t: (t[0], t[1][0]))
+    users_repos = users.cartesian(top_repos_rdd).groupByKey()
+    stars_grouped = starpairs_filtered.groupByKey()
+    unstarred = users_repos.join(stars_grouped)\
+        .map(lambda i: (i[0], set(i[1][0]) - set(i[1][1]) ))\
+        .flatMap(lambda i: [ (i[0], repo) for repo in i[1] ] )
 
-    # predictAll unstarred user-repo pairs.
-    # output format: [ (user, repo, rating) ... ]
+    # predict unstarred user-repo pairs.
     predictions = model.predictAll(unstarred)
 
     # for each user, associate the 5 repos with the highest predicted rating.
     top = predictions\
+        .map(lambda t: (t[0], (t[1],t[2])))\
         .groupByKey()\
-        .map(lambda t: (t[0], sorted(t[1], key=lambda i: -i[1][1])[:5]))\
-    #.map(lambda v: writeToDynamo(v))
+        .map(lambda t: (t[0], [i[0] for i in sorted(t[1], key=lambda i: -i[1])[:5]]))\
+        .coalesce(1)
 
-    print top.take(4)
+    if  env == 'dev':
+        top.saveAsTextFile('data/recommendations.%sk' % lines)
+    elif env == 'prod':
+        text = 's3n://jamis.bucket/recommendations'
