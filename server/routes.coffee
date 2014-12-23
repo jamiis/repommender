@@ -5,10 +5,13 @@ Main application routes
 errors = require "./components/errors"
 express = require "express"
 bodyParser = require "body-parser"
+async = require "async"
+_ = require "lodash"
 
 module.exports = (app) ->
   
   config = app.get "config"
+  github = app.get "github"
 
   # config middleware
   app.use bodyParser.json()
@@ -27,8 +30,44 @@ module.exports = (app) ->
   app.route("/search/:username").post (req, res) ->
     username = req.params.username
     console.log username
-    # TODO return recommendations based on user
-    res.json { uname: username }
+    # TODO lookup repositories from recommended db
+    reposNames = [
+      'Homebrew/homebrew',
+      'jamiis/repommender',
+      'jamiis/tweet-map',
+      'jamiis/dotfiles',
+      'jamiis/tweet-sentiment',
+    ]
+
+    repoJsonKeys = [
+      "url", "stargazers_count", "name",
+      "full_name", "language", "owner"]
+
+    async.map reposNames,
+      (name, callback) ->
+        github.repo name, (err, data, headers) ->
+          callback(err, data)
+      (err, githubRepos) ->
+        if err
+          res.sendStatus 404
+          return
+        console.log githubRepos
+
+        repos = _.map githubRepos, (repo) ->
+          _.pick repo, (v,k) -> k in repoJsonKeys
+        console.log repos
+
+        app.render "repos",
+          repos: repos
+          (err, html) ->
+            if err
+              res.sendStatus 404
+              return
+            console.log html
+            res.json
+              username: username,
+              reposPartial: html
+
 
   # all undefined asset or api routes should return a 404
   app.route("/:url(api|auth|components|app|bower_components|assets)/*").get errors[404]

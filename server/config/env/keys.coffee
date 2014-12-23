@@ -13,6 +13,9 @@ module.exports =
     aws:
       key: process.env.AWS_ACCESS_KEY
       keySecret: process.env.AWS_ACCESS_KEY_SECRET
+    github:
+      user: process.env.GITHUB_USER
+      pass: process.env.GITHUB_PASS
   urls:
     s3:
       bucket: process.env.AWS_S3_BUCKET

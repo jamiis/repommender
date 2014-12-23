@@ -1,0 +1,11 @@
+each repo in repos
+  article
+    header
+      h3
+        a(href='#{repo.url}') #{repo.name}
+        |  by  #{repo.owner.login}
+    p Language: #{repo.language}
+    p 
+      | #{repo.stargazers_count}
+      i.icon.fa-stars
+      | 's

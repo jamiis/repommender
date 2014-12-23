@@ -12,6 +12,7 @@ this.repommender = ->
         type: "POST"
         success: (data, textStatus, jqXHR) ->
           console.log "success ", data, textStatus, jqXHR
+          $(".reel").html data.reposPartial
           return
 
         error: (jqXHR, textStatus, error) ->

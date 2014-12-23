@@ -33,8 +33,8 @@ app.set "io", io
 app.set "aws", aws
 
 # setup server services and start listening
+require("./github") app
 require("./routes") app
-# require("./tweets") app
 server.listen config.port, ->
 console.log "listening on %d, in %s mode", config.port, app.get("env")
 
