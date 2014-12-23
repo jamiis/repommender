@@ -1,4 +1,5 @@
-server/*.js
+*.html
+*.js
 data/*
 node_modules
 *.env
