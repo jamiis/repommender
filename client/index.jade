@@ -1,0 +1,150 @@
+doctype html
+//
+  Repommender
+  Thank you! html5up.net | @n33co
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+html
+  head
+    title Repommender
+    meta(http-equiv='content-type', content='text/html; charset=utf-8')
+    meta(name='description', content='')
+    meta(name='keywords', content='')
+    //if lte IE 8
+      script(src='css/ie/html5shiv.js')
+    script(src='js/jquery.min.js')
+    script(src='js/jquery.dropotron.min.js')
+    script(src='js/jquery.scrolly.min.js')
+    script(src='js/jquery.onvisible.min.js')
+    script(src='js/skel.min.js')
+    script(src='js/skel-layers.min.js')
+    script(src='js/init.js')
+    noscript
+      link(rel='stylesheet', href='css/skel.css')
+      link(rel='stylesheet', href='css/style.css')
+      link(rel='stylesheet', href='css/style-desktop.css')
+      link(rel='stylesheet', href='css/style-noscript.css')
+    //if lte IE 8
+      link(rel='stylesheet', href='css/ie/v8.css')
+  body.homepage
+    // Header
+    #header
+      // Inner
+      .inner
+        header
+          h1
+            a#logo(href='index.html') Repommender
+          hr
+          p A repository recommender for GitHub
+        footer
+          a.button.circled.scrolly(href='#banner') Start
+      // Nav
+      nav#nav
+        ul
+          li
+            a.scrolly(href='#banner') Git Recommendations
+          li
+            a.scrolly(href='#features') Trending
+    // Recommender Banner
+    section#banner
+      header
+        h2 Git Recommendations
+        p Input your GitHub username to see recommended repos.
+    // Recommender Carousel
+    section.carousel
+      .reel
+        article
+          a.image.featured(href='#')
+            img(src='img/pic01.jpg', alt='')
+          header
+            h3
+              a(href='#') Pulvinar sagittis congue
+          p Commodo id natoque malesuada sollicitudin elit suscipit magna.
+        article
+          a.image.featured(href='#')
+            img(src='img/pic02.jpg', alt='')
+          header
+            h3
+              a(href='#') Fermentum sagittis proin
+          p Commodo id natoque malesuada sollicitudin elit suscipit magna.
+        article
+          a.image.featured(href='#')
+            img(src='img/pic03.jpg', alt='')
+          header
+            h3
+              a(href='#') Sed quis rhoncus placerat
+          p Commodo id natoque malesuada sollicitudin elit suscipit magna.
+        article
+          a.image.featured(href='#')
+            img(src='img/pic04.jpg', alt='')
+          header
+            h3
+              a(href='#') Ultrices urna sit lobortis
+          p Commodo id natoque malesuada sollicitudin elit suscipit magna.
+        article
+          a.image.featured(href='#')
+            img(src='img/pic05.jpg', alt='')
+          header
+            h3
+              a(href='#') Varius magnis sollicitudin
+          p Commodo id natoque malesuada sollicitudin elit suscipit magna.
+    // News Features
+    .wrapper.style1
+      section#features.container.special
+        header
+          h2 Trending
+          p
+            | Open source projects, repos, commits, and version releases that are trending on the internet
+        .row
+          article.4u.special
+            a.image.featured(href='https://spark.apache.org/releases/spark-release-1-2-0.html')
+              img(src='img/spark-logo.resized.png', alt='')
+            header
+              h3
+                a(href='https://spark.apache.org/releases/spark-release-1-2-0.html', target='_blank') Spark 1.2 Released
+            p
+              | December 18 - Spark 1.2.0 is the third release on the 1.X line. This release brings performance
+              | and usability improvements in Spark&rsquo;s core engine, a major new API for MLlib,
+              | expanded ML support in Python, a fully H/A mode in Spark Streaming, and much more.
+          article.4u.special
+            a.image.featured(href='http://blog.docker.com/2014/12/announcing-docker-machine-swarm-and-compose-for-orchestrating-distributed-apps/', target='_blank')
+              img(src='img/docker-logo.resized.png', alt='')
+            header
+              h3
+                a(href='http://blog.docker.com/2014/12/announcing-docker-machine-swarm-and-compose-for-orchestrating-distributed-apps/', target='_blank') Docker Announces Container Orchestration
+            p
+              | Docker Swarm is a Docker-native clustering service that works with the Docker Engines, provisioned by
+              | the new Docker Machine service, and creates a resource pool of the hosts on which the distributed applications
+              | run.
+          article.4u.special
+            a.image.featured(href='https://golang.org/doc/go1.4', target='_blank')
+              img(src='img/golang-logo.resized.png', alt='')
+            header
+              h3
+                a(href='https://golang.org/doc/go1.4') Go 1.4 Released
+            p
+              | December 11, 2014 - The latest Go release, version 1.4, arrives as scheduled six months after 1.3.
+              | It contains only one tiny language change, in the form of a backwards-compatible
+              | simple variant of for-range loop, and a possibly breaking change to the compiler
+              | involving methods on pointers-to-pointers.
+    // About (Footer)
+    #footer
+      .container
+        .row
+          .12u
+            // Contact
+            section.contact
+              ul.icons
+                li
+                  a.icon.fa-github(href='https://github.com/jamiis/repommender')
+                    span.label GitHub
+                li
+                  a.icon.fa-twitter(href='https://twitter.com/jamisjohnson')
+                    span.label Twitter
+                li
+                  a.icon.fa-btc(href='https://blockchain.info/address/19Zr5wchhUEYuHQgxzcjw5UohH2vFEGevP')
+                    span.label Donate
+            // Copyright
+            .copyright
+              ul.menu
+                li &copy; Isomorphic Productions. All rights reserved.
+                li So long and thanks for all the fish.
