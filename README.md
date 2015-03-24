@@ -10,7 +10,10 @@ I would like to rotate Github API keys and get a much larger amount
 of data so the recommendations don't tend toward the first year or so 
 of Github's existence.
 
-The recommendation system algorithm used is [Implicit Collaborative Filtering](http://en.wikipedia.org/wiki/Collaborative_filtering?oldformat=true)
+![](client/app/img/home.png)
+![](client/app/img/fd.png)
+
+The recommendation algorithm used is [Implicit Collaborative Filtering](http://en.wikipedia.org/wiki/Collaborative_filtering?oldformat=true)
 and I used Spark and MLlib deployed on AWS Elastic MapReduce to compute the recommendations.
 
 For more implementation details checkout [these slides](https://jamiis.me/submodules/repommender-presentation) 
